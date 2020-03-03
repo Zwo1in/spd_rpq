@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <set>
+#include <deque>
 
 struct Task;
 using Tasks = std::vector<Task>;
@@ -80,10 +80,12 @@ int cmax(Tasks tasks) {
 }
 
 void algorithm(Tasks& tasks) {
+    std::cout << "Before:" << std::endl << std::endl;
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
     std::cout << std::endl << std::endl;
 
-    Tasks shortest_R(tasks.size()), shortest_Q(tasks.size()), ret;
+    Tasks shortest_R(tasks.size()), shortest_Q(tasks.size());
+    std::deque<Task> ret;
 
     std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_R.begin(), shortest_R.end(), [](const auto& t1, const auto& t2){
         return t1.R < t2.R;
@@ -93,20 +95,22 @@ void algorithm(Tasks& tasks) {
         return t1.Q < t2.Q;
     });
 
-    auto R_begin = shortest_R.begin();
-    auto Q_begin = shortest_Q.rbegin();
-    auto R_end   = shortest_R.end();
-    while (R_begin != R_end) {
-        auto insert = [&](auto iter) {
-            if (std::find(ret.begin(), ret.end(), *iter) == ret.end()) {
-                ret.push_back(*iter);
-            }
-        };
-        insert(R_begin++);
-        insert(Q_begin++);
+    auto R_iter = shortest_R.begin();
+    auto Q_iter = shortest_Q.begin();
+    auto R_end  = shortest_R.end();
+    auto ret_middle = ret.begin();
+    auto insert = [&](const auto& iter) {
+        if (std::find(ret.begin(), ret.end(), *iter) == ret.end()) {
+            ret_middle = ret.insert(ret_middle, *iter);
+        }
+    };
+    while (R_iter != R_end) {
+        insert(R_iter++);
+        ++ret_middle;
+        insert(Q_iter++);
     }
-    tasks = ret;
+    tasks = {ret.begin(), ret.end()};
+    std::cout << "After:" << std::endl << std::endl;
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
-    std::cout << std::endl << std::endl;
     std::cout << std::endl << std::endl;
 }
