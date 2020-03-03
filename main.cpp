@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <set>
+#include <deque>
 
 struct Task;
 using Tasks = std::vector<Task>;
@@ -79,34 +79,47 @@ int cmax(Tasks tasks) {
     return c;
 }
 
-void algorithm(Tasks& tasks) {
-    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
-    std::cout << std::endl << std::endl;
+void double_ended_sort(Tasks& tasks) {
+    Tasks shortest_R(tasks.size()),
+          shortest_Q(tasks.size());
+    std::deque<Task> ret;
 
-    Tasks shortest_R(tasks.size()), shortest_Q(tasks.size()), ret;
+    std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_R.begin(), shortest_R.end(),
+        [](const auto& t1, const auto& t2){
+            return t1.R < t2.R;
+        });
+    std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_Q.begin(), shortest_Q.end(),
+        [](const auto& t1, const auto& t2){
+            return t1.Q < t2.Q;
+        });
 
-    std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_R.begin(), shortest_R.end(), [](const auto& t1, const auto& t2){
-        return t1.R < t2.R;
-    });
-
-    std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_Q.begin(), shortest_Q.end(), [](const auto& t1, const auto& t2){
-        return t1.Q < t2.Q;
-    });
-
-    auto R_begin = shortest_R.begin();
-    auto Q_begin = shortest_Q.rbegin();
-    auto R_end   = shortest_R.end();
-    while (R_begin != R_end) {
-        auto insert = [&](auto iter) {
-            if (std::find(ret.begin(), ret.end(), *iter) == ret.end()) {
-                ret.push_back(*iter);
-            }
-        };
-        insert(R_begin++);
-        insert(Q_begin++);
+    auto R_iter = shortest_R.begin();
+    auto Q_iter = shortest_Q.begin();
+    auto R_end  = shortest_R.end();
+    auto ret_middle = ret.begin();
+    while (R_iter != R_end) {
+        if (std::find(ret.begin(), ret.end(), *R_iter) == ret.end()) {
+            ret_middle = ret.insert(ret_middle, *R_iter);
+        }
+        if (std::find(ret.begin(), ret.end(), *Q_iter) == ret.end()) {
+            ret_middle = ret.insert(++ret_middle, *Q_iter);
+        }
+        R_iter++;
+        Q_iter++;
     }
-    tasks = ret;
+    tasks = {ret.begin(), ret.end()};
+}
+
+
+void algorithm(Tasks& tasks) {
+    // Display before
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
     std::cout << std::endl << std::endl;
+
+    // Algorithm
+    double_ended_sort(tasks);
+
+    // Display after
+    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
     std::cout << std::endl << std::endl;
 }
