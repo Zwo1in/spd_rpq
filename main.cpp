@@ -9,6 +9,7 @@ using Tasks = std::vector<Task>;
 
 int cmax(Tasks);
 void algorithm(Tasks&);
+void swapWithTheBest(Tasks&);
 
 int main() {
     std::ifstream data;
@@ -79,6 +80,21 @@ int cmax(Tasks tasks) {
     return c;
 }
 
+void swapWithTheBest(Tasks& t) {
+    auto first = cmax(t);
+    std::pair<int,int> max = std::make_pair(t[0].id,first);
+
+    for(auto task: t) {
+        for(auto t_better: t) {
+            if(task==t_better) continue;
+            std::swap(task,t_better);
+            if(cmax(t)<max.second) max.second = cmax(t);
+            std::swap(t_better,task);
+        }
+        std::swap(task,t[max.first]);
+    }
+}
+
 void algorithm(Tasks& tasks) {
     std::cout << "Before:" << std::endl << std::endl;
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
@@ -90,11 +106,12 @@ void algorithm(Tasks& tasks) {
     std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_R.begin(), shortest_R.end(), [](const auto& t1, const auto& t2){
         return t1.R < t2.R;
     });
-
+    
     std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_Q.begin(), shortest_Q.end(), [](const auto& t1, const auto& t2){
         return t1.Q < t2.Q;
     });
 
+/*
     auto R_iter = shortest_R.begin();
     auto Q_iter = shortest_Q.begin();
     auto R_end  = shortest_R.end();
@@ -109,7 +126,9 @@ void algorithm(Tasks& tasks) {
         ++ret_middle;
         insert(Q_iter++);
     }
-    tasks = {ret.begin(), ret.end()};
+    tasks = {ret.begin(), ret.end()};*/
+
+    swapWithTheBest(tasks);
     std::cout << "After:" << std::endl << std::endl;
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
     std::cout << std::endl << std::endl;
