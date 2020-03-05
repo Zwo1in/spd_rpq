@@ -113,19 +113,19 @@ void double_ended_sort(Tasks& tasks) {
 void best_swaps(Tasks& tasks) {
     auto max = std::make_pair(tasks[0], cmax(tasks));
 
-    for(auto task: tasks) {
-        for(auto t_better: tasks) {
-            if(task == t_better){
+    for(auto& task: tasks) {
+        for(auto& t_better: tasks) {
+            if(task == t_better) {
                 continue;
               }
-            std::iter_swap(task, t_better);
+            std::iter_swap(&task, &t_better);
 
             if(cmax(tasks) < max.second){
                 max = std::make_pair(task, cmax(tasks));
               }
-            std::iter_swap(t_better, task);
+            std::iter_swap(&t_better, &task);
         }
-        std::iter_swap(task, max.first);
+        std::swap(max.first, task);
     }
 }
 
