@@ -4,12 +4,15 @@
 #include <vector>
 #include <deque>
 #include <limits>
+#include <array>
 
 struct Task;
 using Tasks = std::vector<Task>;
 
+using Solver = std::pair<bool, int>;
+
 int cmax(Tasks);
-void algorithm(Tasks&);
+void algorithm(Tasks&, Solver);
 
 int main() {
     std::ifstream data;
@@ -35,15 +38,31 @@ int main() {
         }
     } while (current != 4);
 
-    for (auto& tasks: tasks_list) {
-        algorithm(tasks);
-    }
+    Solver solver{true, 0};
+    const int results[]{103378, 100926, 100381, 100010, 100000};
+    std::array<Solver, 5> bests;
+    current = 0;
+    while (current < 5) {
+        for (auto& tasks: tasks_list) {
+            algorithm(tasks, solver);
+        }
 
-    int sum{};
-    for (auto& tasks: tasks_list) {
-        sum += cmax(tasks);
+        int sum{};
+        for (auto& tasks: tasks_list) {
+            sum += cmax(tasks);
+        }
+
+        if (sum < results[current]) {
+            std::cout << "Cmax = " << sum << ", solver: <presorting " << solver.first << ", repeatitions " << solver.second << ">\n";
+            bests[current] = solver;
+            current ++;
+        }
+
+        if (solver.first)
+            solver.second++;
+
+        solver.first = solver.first == false;
     }
-    std::cout << "Sum: " << sum << std::endl;
 
     return 0;
 }
@@ -136,14 +155,15 @@ void best_swaps(Tasks& tasks) {
     }
 }
 
-void algorithm(Tasks& tasks) {
+void algorithm(Tasks& tasks, Solver solver) {
     // Display before
     //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
     //std::cout << std::endl << std::endl;
 
     // Algorithm
-    double_ended_sort(tasks);
-    for (int i=0; i<256; i++) best_swaps(tasks);
+    if (solver.first)
+        double_ended_sort(tasks);
+    for (int i=0; i<solver.second; i++) best_swaps(tasks);
 
     // Display after
     //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
