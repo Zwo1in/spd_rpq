@@ -39,6 +39,7 @@ int main() {
     } while (current != 4);
 
     Solver solver{true, 0};
+    const float grades[]{3.5, 4, 4.5, 5, 5.5};
     const int results[]{103378, 100926, 100381, 100010, 100000};
     std::array<Solver, 5> bests;
     current = 0;
@@ -53,7 +54,7 @@ int main() {
         }
 
         if (sum < results[current]) {
-            std::cout << "Cmax = " << sum << ", solver: <presorting " << solver.first << ", repeatitions " << solver.second << ">\n";
+            std::cout << "Grade: " << grades[current] << " Req: " << results[current] << " Got Cmax = " << sum << " with solver: <presorting " << solver.first << ", repeatitions " << solver.second << ">\n";
             bests[current] = solver;
             current ++;
         }
