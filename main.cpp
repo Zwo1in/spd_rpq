@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <deque>
+#include <limits>
 
 struct Task;
 using Tasks = std::vector<Task>;
@@ -110,16 +111,41 @@ void double_ended_sort(Tasks& tasks) {
     tasks = {ret.begin(), ret.end()};
 }
 
+void best_swaps(Tasks& tasks) {
+    auto optimal = std::make_pair(&tasks[0], std::numeric_limits<int>::max());
+
+    for (int i=0; i < tasks.size(); ++i) {
+        auto current = std::find_if(tasks.begin(), tasks.end(),
+            [i](const auto& task) {
+                return task.id == i;
+            });
+
+        for (auto& t_better: tasks) {
+            if (*current == t_better) {
+                continue;
+            }
+            std::swap(*current, t_better);
+
+            if (cmax(tasks) < optimal.second) {
+                optimal = std::make_pair(&t_better, cmax(tasks));
+            }
+            std::swap(t_better, *current);
+        }
+        std::iter_swap(optimal.first, current);
+        optimal.second = std::numeric_limits<int>::max();
+    }
+}
 
 void algorithm(Tasks& tasks) {
     // Display before
-    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
-    std::cout << std::endl << std::endl;
+    //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
+    //std::cout << std::endl << std::endl;
 
     // Algorithm
     double_ended_sort(tasks);
+    for (int i=0; i<256; i++) best_swaps(tasks);
 
     // Display after
-    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
-    std::cout << std::endl << std::endl;
+    //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
+    //std::cout << std::endl << std::endl;
 }
