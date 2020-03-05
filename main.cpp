@@ -9,7 +9,7 @@ using Tasks = std::vector<Task>;
 
 int cmax(Tasks);
 void algorithm(Tasks&);
-void swapWithTheBest(Tasks&);
+void best_swaps(Tasks&);
 
 int main() {
     std::ifstream data;
@@ -80,18 +80,21 @@ int cmax(Tasks tasks) {
     return c;
 }
 
-void swapWithTheBest(Tasks& t) {
-    auto first = cmax(t);
-    std::pair<int,int> max = std::make_pair(t[0].id,first);
+void best_swaps(Tasks& tasks) {
+    auto max = std::make_pair(tasks[0], cmax(tasks));
 
-    for(auto task: t) {
-        for(auto t_better: t) {
-            if(task==t_better) continue;
-            std::swap(task,t_better);
-            if(cmax(t)<max.second) max.second = cmax(t);
-            std::swap(t_better,task);
+    for(auto& task: tasks) {
+        for(auto& t_better: tasks) {
+            if(task == t_better)
+                continue;
+            std::iter_swap(task, t_better);
+
+            if(cmax(tasks) < max.second)
+                max = std::make_pair(task, cmax(tasks));
+
+            std::iter_swap(task, t_better);
         }
-        std::swap(task,t[max.first]);
+        std::iter_swap(max.first, task);
     }
 }
 
@@ -106,10 +109,16 @@ void algorithm(Tasks& tasks) {
     std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_R.begin(), shortest_R.end(), [](const auto& t1, const auto& t2){
         return t1.R < t2.R;
     });
-    
+
     std::partial_sort_copy(tasks.begin(), tasks.end(), shortest_Q.begin(), shortest_Q.end(), [](const auto& t1, const auto& t2){
         return t1.Q < t2.Q;
     });
+
+    best_swaps(tasks);
+    std::cout << "After:" << std::endl << std::endl;
+    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
+    std::cout << std::endl << std::endl;
+}
 
 /*
     auto R_iter = shortest_R.begin();
@@ -127,9 +136,3 @@ void algorithm(Tasks& tasks) {
         insert(Q_iter++);
     }
     tasks = {ret.begin(), ret.end()};*/
-
-    swapWithTheBest(tasks);
-    std::cout << "After:" << std::endl << std::endl;
-    std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
-    std::cout << std::endl << std::endl;
-}
