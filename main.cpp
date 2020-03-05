@@ -110,18 +110,22 @@ void double_ended_sort(Tasks& tasks) {
     tasks = {ret.begin(), ret.end()};
 }
 
-void swapWithTheBest(Tasks& t) {
-    auto first = cmax(t);
-    std::pair<int,int> max = std::make_pair(t[0].id,first);
+void best_swaps(Tasks& tasks) {
+    auto max = std::make_pair(tasks[0], cmax(tasks));
 
-    for(auto task: t) {
-        for(auto t_better: t) {
-            if(task==t_better) continue;
-            std::swap(task,t_better);
-            if(cmax(t)<max.second) max.second = cmax(t);
-            std::swap(t_better,task);
+    for(auto task: tasks) {
+        for(auto t_better: tasks) {
+            if(task == t_better){
+                continue;
+              }
+            std::iter_swap(task, t_better);
+
+            if(cmax(tasks) < max.second){
+                max = std::make_pair(task, cmax(tasks));
+              }
+            std::iter_swap(t_better, task);
         }
-        std::swap(task,t[max.first]);
+        std::iter_swap(task, max.first);
     }
 }
 
@@ -132,7 +136,7 @@ void algorithm(Tasks& tasks) {
 
     // Algorithm
     double_ended_sort(tasks);
-    swapWithTheBest(tasks);
+    best_swaps(tasks);
 
     // Display after
     std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
