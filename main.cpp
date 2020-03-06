@@ -13,6 +13,7 @@ using Solver = std::pair<bool, int>;
 
 int cmax(Tasks);
 void algorithm(Tasks&, Solver);
+void get_id(Tasks);
 
 int main() {
     std::ifstream data;
@@ -39,17 +40,21 @@ int main() {
     } while (current != 4);
 
     Solver solver{true, 0};
-    const int results[]{103378, 100926, 100381, 100010, 100000};
+    const int results[]{103378, 100926, 100381};
     std::array<Solver, 5> bests;
     current = 0;
-    while (current < 5) {
+    while (current < 3) {
         for (auto& tasks: tasks_list) {
             algorithm(tasks, solver);
         }
 
         int sum{};
+        int instantion_number = 1;
         for (auto& tasks: tasks_list) {
             sum += cmax(tasks);
+            //get_id(tasks);
+            std::cout << "data " << instantion_number << ": " << cmax(tasks) << std::endl;
+            instantion_number++;
         }
 
         if (sum < results[current]) {
@@ -130,6 +135,13 @@ void double_ended_sort(Tasks& tasks) {
     tasks = {ret.begin(), ret.end()};
 }
 
+
+void get_id(Tasks tasks) { 
+	for(auto task: tasks) {
+		std::cout << task.id+1 << " ";
+	}
+}
+
 void best_swaps(Tasks& tasks) {
     auto optimal = std::make_pair(&tasks[0], std::numeric_limits<int>::max());
 
@@ -163,7 +175,8 @@ void algorithm(Tasks& tasks, Solver solver) {
     // Algorithm
     if (solver.first)
         double_ended_sort(tasks);
-    for (int i=0; i<solver.second; i++) best_swaps(tasks);
+    for (int i=0; i<solver.second; i++) 
+		best_swaps(tasks);
 
     // Display after
     //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
