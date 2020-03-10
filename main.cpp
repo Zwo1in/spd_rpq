@@ -94,19 +94,19 @@ void double_ended_sort(Tasks& tasks) {
             return t1.Q < t2.Q;
         });
 
-    auto R_iter = shortest_R.begin();
     auto Q_iter = shortest_Q.begin();
-    auto R_end  = shortest_R.end();
+    auto R_iter = shortest_R.begin();
+    auto Q_end  = shortest_Q.end();
     auto ret_middle = ret.begin();
-    while (R_iter != R_end) {
-        if (std::find(ret.begin(), ret.end(), *R_iter) == ret.end()) {
-            ret_middle = ret.insert(ret_middle, *R_iter);
-        }
+    while (Q_iter != Q_end) {
         if (std::find(ret.begin(), ret.end(), *Q_iter) == ret.end()) {
-            ret_middle = ret.insert(++ret_middle, *Q_iter);
+            ret_middle = ret.insert(ret_middle, *Q_iter);
         }
-        R_iter++;
+        if (std::find(ret.begin(), ret.end(), *R_iter) == ret.end()) {
+            ret_middle = ret.insert(++ret_middle, *R_iter);
+        }
         Q_iter++;
+        R_iter++;
     }
     tasks = {ret.begin(), ret.end()};
 }
