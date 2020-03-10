@@ -143,7 +143,7 @@ void algorithm(Tasks& tasks) {
 
     // Algorithm
     double_ended_sort(tasks);
-    for (int i=0; i<256; i++) best_swaps(tasks);
+    for (int i=0; i<22; i++) best_swaps(tasks);
 
     // Display after
     //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
