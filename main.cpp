@@ -44,12 +44,13 @@ int main() {
     std::array<Solver, 5> bests;
     current = 0;
     while (current < 5) {
-        for (auto& tasks: tasks_list) {
+        Tasks tasks_list_tmp[4] = tasks_list;
+        for (auto& tasks: tasks_list_tmp) {
             algorithm(tasks, solver);
         }
 
         int sum{};
-        for (auto& tasks: tasks_list) {
+        for (auto& tasks: tasks_list_tmp) {
             sum += cmax(tasks);
         }
 
