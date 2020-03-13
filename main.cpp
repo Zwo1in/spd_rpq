@@ -13,6 +13,7 @@ using Solver = std::pair<bool, int>;
 
 int cmax(Tasks);
 void algorithm(Tasks&, Solver);
+void get_id(Tasks);
 
 int main() {
     std::ifstream data;
@@ -50,6 +51,7 @@ int main() {
         }
 
         int sum{};
+
         for (auto& tasks: tasks_list_tmp) {
             sum += cmax(tasks);
         }
@@ -132,6 +134,13 @@ void double_ended_sort(Tasks& tasks) {
     tasks = {ret.begin(), ret.end()};
 }
 
+
+void get_id(Tasks tasks) { 
+	for(auto task: tasks) {
+		std::cout << task.id+1 << " ";
+	}
+}
+
 void best_swaps(Tasks& tasks) {
     auto optimal = std::make_pair(&tasks[0], std::numeric_limits<int>::max());
 
@@ -165,7 +174,8 @@ void algorithm(Tasks& tasks, Solver solver) {
     // Algorithm
     if (solver.first)
         double_ended_sort(tasks);
-    for (int i=0; i<solver.second; i++) best_swaps(tasks);
+    for (int i=0; i<solver.second; i++) 
+		best_swaps(tasks);
 
     // Display after
     //std::for_each(tasks.begin(), tasks.end(), [](auto it) { std::cout << it << std::endl; });
